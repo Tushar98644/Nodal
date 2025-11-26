@@ -19,8 +19,10 @@ const LandingPage = () => {
               <Preview />
             </div>
           </div>
-        ) :
-        <InfoForm />
+        ) : (<>
+          <InfoForm />
+        </>
+        )
       }
     </main>
   );

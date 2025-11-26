@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { ArrowRight, Check, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
-const NovusOnboardingCompact = () => {
+const InfoForm = () => {
     const [step, setStep] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [formData, setFormData] = useState({
@@ -52,11 +52,11 @@ const NovusOnboardingCompact = () => {
         }, 300);
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: { target: { value: any } }) => {
         setFormData({ ...formData, [questions[step].key]: e.target.value });
     };
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: { key: string; }) => {
         if (e.key === 'Enter') handleNext();
     };
 
@@ -68,18 +68,13 @@ const NovusOnboardingCompact = () => {
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#FFDAC1] rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse -translate-y-1/2 translate-x-1/4"></div>
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#FFCCB6] rounded-full mix-blend-multiply filter blur-3xl opacity-40 -translate-x-1/4 translate-y-1/4"></div>
 
-            <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
-                <div className="w-6 h-6 bg-orange-500 rounded-md flex items-center justify-center text-white text-xs font-bold">N</div>
-                <span className="font-bold text-lg tracking-tight text-slate-800">Novus</span>
-            </div>
-
             <div className="relative z-10 w-full max-w-lg px-4">
                 <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_20px_40px_-15px_rgba(255,145,100,0.1)] border border-white/60 p-8 md:p-10 overflow-hidden">
 
                     {/* Progress Bar */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-orange-50/50">
                         <div
-                            className="h-full bg-gradient-to-r from-orange-400 to-red-400 transition-all duration-500 ease-out"
+                            className="h-full bg-linear-to-r from-orange-400 to-red-400 transition-all duration-500 ease-out"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -140,4 +135,4 @@ const NovusOnboardingCompact = () => {
     );
 };
 
-export default NovusOnboardingCompact;
+export default InfoForm;
