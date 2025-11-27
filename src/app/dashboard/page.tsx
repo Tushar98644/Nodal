@@ -57,7 +57,20 @@ const DashBoardPage = () => {
           </div>
 
           <div id="preview" className="h-[60%] lg:h-full lg:col-span-3 bg-slate-50/50 relative overflow-hidden">
-            <Preview object={object} />
+            <Preview
+              object={{
+                companyName: object.companyName ?? "",
+                tagline: object.tagline ?? "",
+                websiteHtml: object.websiteHtml ?? "",
+                logoSvg: object.logoSvg ?? "",
+                readme: object.readme ?? "",
+                colors: {
+                  primary: object.colors?.primary ?? "#000000",
+                  accent: object.colors?.accent ?? "#000000",
+                  background: object.colors?.background ?? "#ffffff",
+                }
+              }}
+            />
           </div>
         </div>
       )}
