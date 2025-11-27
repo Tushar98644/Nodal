@@ -9,7 +9,7 @@ const Header = () => {
     }
 
     return (
-        <header className="fixed top-0 left-0 w-full flex items-center justify-between px-8 py-6 z-50 pointer-events-none">
+        <header className="fixed top-0 left-0 w-full flex items-center justify-between px-8 py-4 z-50 pointer-events-none">
             <div className="flex items-center gap-3 pointer-events-auto cursor-pointer">
                 <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-orange-500/20">
                     N

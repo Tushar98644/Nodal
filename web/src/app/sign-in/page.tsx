@@ -1,6 +1,6 @@
 'use client'
 
-import { Github, Command, ArrowRight } from 'lucide-react';
+import { Github, ArrowRight } from 'lucide-react';
 
 const SigninPage = () => {
   return (

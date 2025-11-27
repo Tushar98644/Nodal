@@ -1,17 +1,17 @@
 'use client'
 
-import { Chat, Header, InfoForm, Preview } from "@/components";
+import { Chat, Header, InfoForm, Preview } from "../../components";
 import { useState } from "react";
 
 const DashBoardPage = () => {
-  const [build, setBuild] = useState(false);
+  const [build, setBuild] = useState(true);
 
   return (
     <main className="h-full">
       <Header />
       {build ?
         (
-          <div className="grid grid-cols-5">
+          <div className="grid grid-cols-5 h-full">
             <div id="chat" className="col-span-2 bg-amber-600">
               <Chat />
             </div>
@@ -19,9 +19,8 @@ const DashBoardPage = () => {
               <Preview />
             </div>
           </div>
-        ) : (<>
+        ) : (
           <InfoForm />
-        </>
         )
       }
     </main>
