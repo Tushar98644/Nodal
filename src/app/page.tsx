@@ -8,7 +8,7 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const steps = [
-    { num: "01", title: "Chat with AI", desc: "Tell Novus about your niche. We'll ask 4 simple questions to nail your vibe." },
+    { num: "01", title: "Chat with AI", desc: "Tell Nodal about your niche. We'll ask 4 simple questions to nail your vibe." },
     { num: "02", title: "Review & Refine", desc: "See your assets generated in real-time. Ask for tweaks like 'make it bolder'." },
     { num: "03", title: "Download & Launch", desc: "Get your ZIP file. Drag and drop to free hosting. Verify your business." }
   ];
@@ -34,7 +34,7 @@ export default function LandingPage() {
               <Sparkles size={16} /><span>AI-Powered Agency Builder</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1] mb-6">Launch your <span className="text-orange-500">recruitment agency</span> in minutes.</h1>
-            <p className="text-xl text-slate-500 mb-10 leading-relaxed max-w-xl mx-auto md:mx-0">Stop fussing with designers. Novus uses AI to generate your professional brand assets and a Stripe-ready website instantly.</p>
+            <p className="text-xl text-slate-500 mb-10 leading-relaxed max-w-xl mx-auto md:mx-0">Stop fussing with designers. Nodal uses AI to generate your professional brand assets and a Stripe-ready website instantly.</p>
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
               <Link href="/dashboard" className="group bg-slate-900 text-white px-8 py-4 rounded-2xl text-lg font-bold flex items-center gap-3 hover:bg-orange-500 hover:shadow-lg transition-all"><span>Start Building Now</span><ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></Link>
               <p className="text-slate-500 text-sm font-medium flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500" /> No design skills needed</p>
@@ -144,9 +144,9 @@ export default function LandingPage() {
         </section>
 
         <footer className="pb-12 text-center">
-          <div className="flex justify-center gap-2 mb-6 opacity-60"><div className="w-6 h-6 bg-slate-300 rounded-md flex center text-white text-xs font-bold justify-center items-center">N</div><span className="font-bold text-lg text-slate-400">Novus</span></div>
+          <div className="flex justify-center gap-2 mb-6 opacity-60"><div className="w-6 h-6 bg-slate-300 rounded-md flex center text-white text-xs font-bold justify-center items-center">N</div><span className="font-bold text-lg text-slate-400">Nodal</span></div>
           <div className="flex justify-center gap-8 text-sm text-slate-400 mb-6 font-medium">{['Privacy', 'Terms', 'Twitter'].map(l => <a key={l} href="#" className="hover:text-slate-600">{l}</a>)}</div>
-          <p className="text-slate-400 text-xs">© {new Date().getFullYear()} Novus AI.</p>
+          <p className="text-slate-400 text-xs">© {new Date().getFullYear()} Nodal AI.</p>
         </footer>
       </main>
     </div>
