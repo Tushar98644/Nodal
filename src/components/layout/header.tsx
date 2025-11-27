@@ -2,7 +2,7 @@
 
 import { HelpCircle } from 'lucide-react';
 
-const Header = () => {
+export const Header = () => {
 
     const openHelpModal = () => {
         console.log("modal clicked");
@@ -30,5 +30,3 @@ const Header = () => {
         </header>
     );
 }
-
-export default Header;

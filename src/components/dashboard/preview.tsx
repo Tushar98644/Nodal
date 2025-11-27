@@ -1,0 +1,246 @@
+import { useState, useMemo } from 'react';
+import {
+    Eye,
+    Code2,
+    Palette,
+    Download,
+    Smartphone,
+    Monitor,
+    Maximize2,
+    Check,
+    Copy,
+    FileJson,
+    FileCode,
+    FileType,
+    Minimize2,
+    Image as ImageIcon
+} from 'lucide-react';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { ColorSwatch, FileTreeItem, TabButton } from '@/features';
+import { BrandSchema } from '@/lib/schema';
+
+export const Preview = ({ object }: { object: BrandSchema }) => {
+    const [activeTab, setActiveTab] = useState<'preview' | 'code' | 'brand'>('preview');
+    const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop');
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<string>('index.html');
+
+    const files = useMemo(() => {
+        const brandData = {
+            name: object?.companyName || "Generating...",
+            tagline: object?.tagline || "Generating...",
+            colors: object?.colors || {},
+        };
+
+        return {
+            'index.html': {
+                lang: 'html',
+                icon: <FileCode size={14} className="text-orange-400" />,
+                content: object?.websiteHtml || "<!-- Generating HTML... -->"
+            },
+            'logo.svg': {
+                lang: 'xml',
+                icon: <ImageIcon size={14} className="text-purple-400" />,
+                content: object?.logoSvg || "<svg>...</svg>"
+            },
+            'brand.json': {
+                lang: 'json',
+                icon: <FileJson size={14} className="text-yellow-400" />,
+                content: JSON.stringify(brandData, null, 2)
+            },
+            'README.txt': {
+                lang: 'text',
+                icon: <FileType size={14} className="text-slate-400" />,
+                content: object?.readme || "Generating instructions..."
+            }
+        };
+    }, [object]);
+
+    const handleCopy = () => {
+        // @ts-ignore
+        navigator.clipboard.writeText(files[selectedFile].content);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    };
+
+    const handleExport = async () => {
+        const zip = new JSZip();
+        
+        zip.file("index.html", files['index.html'].content);
+        zip.file("logo.svg", files['logo.svg'].content);
+        zip.file("brand.json", files['brand.json'].content);
+        zip.file("README.txt", files['README.txt'].content);
+
+        try {
+            const content = await zip.generateAsync({ type: "blob" });
+            saveAs(content, `${object?.companyName?.replace(/\s+/g, '_') || 'Novus'}_Agency_Pack.zip`);
+        } catch (error) {
+            console.error("Failed to zip files:", error);
+            alert("Could not create download. Please try again.");
+        }
+    };
+
+    return (
+        <div className={`relative transition-all duration-300 ease-in-out font-sans text-slate-900 bg-[#FFFBF8] ${isFullScreen ? 'fixed inset-0 z-50 p-0' : 'w-full h-full flex flex-col p-4 md:p-6'}`}>
+
+            {!isFullScreen && (
+                <>
+                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#FFDAC1] rounded-full mix-blend-multiply filter blur-3xl opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#FFCCB6] rounded-full mix-blend-multiply filter blur-3xl opacity-40 -translate-x-1/4 translate-y-1/4 pointer-events-none"></div>
+                </>
+            )}
+
+            <div className={`relative z-10 w-full h-full bg-white/80 backdrop-blur-xl shadow-[0_20px_40px_-15px_rgba(255,145,100,0.1)] border border-white/60 flex flex-col overflow-hidden ${isFullScreen ? 'rounded-none border-none' : 'rounded-3xl'}`}>
+
+                <header className="h-16 border-b border-slate-100 flex items-center justify-between px-6 shrink-0 bg-white/50">
+
+                    <div className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-xl">
+                        <TabButton
+                            active={activeTab === 'preview'}
+                            onClick={() => setActiveTab('preview')}
+                            icon={<Eye size={16} />}
+                            label="Preview"
+                        />
+                        <TabButton
+                            active={activeTab === 'code'}
+                            onClick={() => setActiveTab('code')}
+                            icon={<Code2 size={16} />}
+                            label="Code"
+                        />
+                        <TabButton
+                            active={activeTab === 'brand'}
+                            onClick={() => setActiveTab('brand')}
+                            icon={<Palette size={16} />}
+                            label="Brand Kit"
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setIsFullScreen(!isFullScreen)}
+                            className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                        >
+                            {isFullScreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+                            <span>{isFullScreen ? 'Exit Full Screen' : 'Full Screen'}</span>
+                        </button>
+                        <button onClick={handleExport} className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-orange-500 shadow-lg shadow-orange-500/20 transition-all hover:scale-105 active:scale-95">
+                            <Download size={16} />
+                            <span>Export</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div className="flex-1 overflow-hidden relative bg-slate-50/50">
+                    {activeTab === 'preview' && (
+                        <div className="w-full h-full flex flex-col items-center">
+                            <div className="w-full h-12 flex items-center justify-center gap-4 border-b border-slate-200/50 bg-white/30 backdrop-blur-sm">
+                                <button
+                                    onClick={() => setDevice('desktop')}
+                                    className={`p-2 rounded-lg transition-all ${device === 'desktop' ? 'bg-white shadow-sm text-orange-500' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                    <Monitor size={18} />
+                                </button>
+                                <button
+                                    onClick={() => setDevice('mobile')}
+                                    className={`p-2 rounded-lg transition-all ${device === 'mobile' ? 'bg-white shadow-sm text-orange-500' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                    <Smartphone size={18} />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 w-full p-4 overflow-auto flex justify-center bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] bg-size-[20px_20px]">
+                                <div
+                                    className={`bg-white shadow-2xl transition-all duration-500 ease-in-out border border-slate-200 overflow-hidden ${device === 'desktop' ? 'w-full h-full rounded-xl' : 'w-[375px] h-[667px] rounded-[3rem] border-8 border-slate-900 my-auto shadow-xl'
+                                        }`}
+                                >
+                                    <iframe
+                                        title="Website Preview"
+                                        srcDoc={files['index.html'].content}
+                                        className="w-full h-full border-none bg-white"
+                                        sandbox="allow-scripts allow-same-origin"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'code' && (
+                        <div className="w-full h-full flex bg-[#1e1e1e] text-slate-300">
+
+                            <div className="w-48 md:w-60 border-r border-white/10 flex flex-col shrink-0">
+                                <div className="h-10 flex items-center px-4 text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-white/5">
+                                    Explorer
+                                </div>
+                                <div className="p-2 space-y-0.5">
+                                    {Object.entries(files).map(([name, fileData]) => (
+                                        <FileTreeItem
+                                            key={name}
+                                            name={name}
+                                            fileData={fileData}
+                                            active={selectedFile === name}
+                                            onClick={() => setSelectedFile(name)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex-1 flex flex-col min-w-0">
+                                <div className="h-10 flex items-center justify-between px-4 border-b border-white/10 bg-[#1e1e1e]">
+                                    <span className="text-xs font-medium text-slate-400">{selectedFile}</span>
+                                    <button onClick={handleCopy} className="text-xs hover:text-white transition-colors flex items-center gap-1">
+                                        {isCopied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+                                        {isCopied ? "Copied" : "Copy"}
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-auto p-4 scrollbar-thin scrollbar-thumb-white/10">
+                                    <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-all">
+                                        {/* @ts-ignore */}
+                                        <code>{files[selectedFile]?.content}</code>
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'brand' && (
+                        <div className="w-full h-full p-8 overflow-y-auto">
+                            <h2 className="text-2xl font-bold mb-6">Generated Assets</h2>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Color Palette</h3>
+                                    <div className="flex flex-wrap gap-4">
+                                        {object?.colors ? (
+                                            Object.entries(object.colors).map(([key, value]) => (
+                                                <ColorSwatch key={key} color={value} label={key} />
+                                            ))
+                                        ) : (
+                                            <p className="text-slate-400 text-sm italic">Loading colors...</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Logo Preview</h3>
+                                    <div className="w-full h-40 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100 overflow-hidden p-4">
+                                        {object?.logoSvg ? (
+                                            <div 
+                                                className="w-full h-full flex items-center justify-center" 
+                                                dangerouslySetInnerHTML={{ __html: object.logoSvg }} 
+                                            />
+                                        ) : (
+                                            <span className="text-slate-400 text-sm">Generating logo...</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            </div>
+        </div>
+    );
+};
