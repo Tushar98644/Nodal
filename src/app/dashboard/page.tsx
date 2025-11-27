@@ -1,7 +1,7 @@
 'use client'
 
 import { brandSchema } from "@/lib/schema";
-import { ChatComponent, Header, InfoForm, Preview } from "@/components";
+import { ChatComponent, InfoForm, Preview } from "@/components";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useState } from "react";
 import { LoadingScreen } from "@/features";
@@ -37,31 +37,32 @@ const DashBoardPage = () => {
   };
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden bg-[#FFFBF8]">
-      <Header />
+    <div className="h-full w-full relative">
 
-      <div className="flex-1 overflow-hidden relative">
-        {!hasSubmitted && (
+      {!hasSubmitted && (
+        <div className="h-full w-full flex items-center justify-center">
           <InfoForm onComplete={handleFormComplete} />
-        )}
+        </div>
+      )}
 
-        {hasSubmitted && !object && (
-          <LoadingScreen />
-        )}
+      {hasSubmitted && !object && (
+        <LoadingScreen />
+      )}
 
-        {hasSubmitted && object && (
-          <div className="grid grid-cols-5 h-full animate-fade-in">
-            <div id="chat" className="col-span-2 border-r border-slate-200 bg-white/50 backdrop-blur-sm">
-              <ChatComponent onSubmit={handleChatSubmit} object={object} isLoading={isLoading} />
-            </div>
-            <div id="preview" className="col-span-3 bg-slate-50/50">
-              <Preview object={object} />
-            </div>
+      {hasSubmitted && object && (
+        <div className="grid grid-cols-1 lg:grid-cols-5 h-full w-full animate-fade-in">
+
+          <div id="chat" className="h-[40%] lg:h-full lg:col-span-2 border-b lg:border-b-0 lg:border-r border-slate-200 bg-white/50 backdrop-blur-sm relative flex flex-col">
+            <ChatComponent onSubmit={handleChatSubmit} object={object} isLoading={isLoading} />
           </div>
-        )}
 
-      </div>
-    </main>
+          <div id="preview" className="h-[60%] lg:h-full lg:col-span-3 bg-slate-50/50 relative overflow-hidden">
+            <Preview object={object} />
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 }
 

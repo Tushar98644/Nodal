@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { InfoFormProps } from '@/types';

@@ -14,7 +14,7 @@ export const LoadingScreen = () => {
         </div>
 
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Generating your agency...</h2>
-        <p className="text-slate-500 mb-8">AI is analyzing your vibe and drafting your initial website.</p>
+        <p className="text-slate-500 mb-8">AI is analyzing your vibe and drafting your cool website.</p>
 
         <div className="flex items-center gap-3 text-sm font-bold text-slate-400 uppercase tracking-widest">
            <Loader2 size={16} className="animate-spin text-orange-500" />
