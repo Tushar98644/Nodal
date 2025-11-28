@@ -3,21 +3,10 @@
 import { useState } from 'react';
 import { ArrowRight, Sparkles, Palette, Download, Zap, LayoutTemplate, CheckCircle2, Globe, Plus, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { faqs, steps } from '@/constants';
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const steps = [
-    { num: "01", title: "Chat with AI", desc: "Tell Nodal about your niche. We'll ask 4 simple questions to nail your vibe." },
-    { num: "02", title: "Review & Refine", desc: "See your assets generated in real-time. Ask for tweaks like 'make it bolder'." },
-    { num: "03", title: "Download & Launch", desc: "Get your ZIP file. Drag and drop to free hosting. Verify your business." }
-  ];
-
-  const faqs = [
-    { q: "Is the website really free to host?", a: "Yes. We generate a static HTML file. You can host this for free on platforms like Netlify Drop, Vercel, or GitHub Pages forever." },
-    { q: "Can I edit the website later?", a: "Absolutely. It's standard HTML and Tailwind CSS. You (or any developer) can edit the text and images using any code editor." },
-    { q: "Do I own the logo?", a: "Yes. The assets are generated for you and you have full commercial rights to use them for your business." }
-  ];
 
   return (
     <div className="relative min-h-screen w-full bg-[#FFFBF8] overflow-hidden font-sans text-slate-900 selection:bg-orange-100">

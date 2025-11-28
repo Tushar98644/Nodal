@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { FileCode, FileJson, FileType, Image as ImageIcon } from 'lucide-react';
-import { formatHtml } from '@/utils/format-html';
+import { formatHtml } from '@/utils';
 import { BrandSchema } from '@/lib/schema';
 
 export const usePreviewFiles = (object: BrandSchema) => {

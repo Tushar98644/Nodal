@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { usePreviewFiles } from '@/hooks/use-preview-file';
 import { BrandSchema } from '@/lib/schema';
-import { PreviewHeader } from '@/features/preview/preview-header';
-import { BrandAssets } from '@/features/preview/brand-assets';
-import { CodeEditor } from '@/features/preview/code-editor';
-import { PreviewContent } from '@/features/preview/preview-context';
+import { PreviewHeader, PreviewContent, CodeEditor, BrandAssets } from '@/features';
 
 export const Preview = ({ object }: { object: BrandSchema }) => {
     const [activeTab, setActiveTab] = useState<'preview' | 'code' | 'brand'>('preview');

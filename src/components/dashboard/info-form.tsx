@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { InfoFormProps } from '@/types';
+import { questions } from '@/constants';
 
 export const InfoForm = ({ onComplete }: InfoFormProps) => {
     const [step, setStep] = useState(0);
@@ -13,33 +14,6 @@ export const InfoForm = ({ onComplete }: InfoFormProps) => {
         vibe: '',
         inspiration: ''
     });
-
-    const questions = [
-        {
-            key: 'name',
-            label: "Let's start with the basics.",
-            sub: "What is the name of your new recruitment agency?",
-            placeholder: "e.g. Apex Talent Partners"
-        },
-        {
-            key: 'industry',
-            label: "Find your niche.",
-            sub: "What industry will you focus on?",
-            placeholder: "e.g. Fintech, Healthcare, Creative..."
-        },
-        {
-            key: 'vibe',
-            label: "Set the tone.",
-            sub: "Describe your brand style in a few words.",
-            placeholder: "e.g. Minimalist, Bold, Trustworthy"
-        },
-        {
-            key: 'inspiration',
-            label: "Visual direction.",
-            sub: "Paste a link to a website design you admire.",
-            placeholder: "https://..."
-        }
-    ];
 
     const handleNext = () => {
         if (!formData[questions[step].key]) return;

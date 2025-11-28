@@ -1,1 +1,1 @@
-export { handleExport } from './handle-export';
+export { formatHtml } from './format-html';
