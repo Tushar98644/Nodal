@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { usePreviewFiles } from '@/hooks/use-preview-file';
+import { usePreviewFiles } from '@/hooks/use-preview-files';
 import { BrandSchema } from '@/lib/schema';
 import { PreviewHeader, PreviewContent, CodeEditor, BrandAssets } from '@/features';
 
