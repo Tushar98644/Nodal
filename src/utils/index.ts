@@ -1,1 +1,1 @@
-export { handleExport } from './handleExport';
+export { handleExport } from './handle-export';
