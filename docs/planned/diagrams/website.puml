@@ -1,0 +1,58 @@
+@startuml
+title Website Creation & Deployment Sequence
+
+actor Tenant
+participant "Web App" as UI
+participant "API Server" as API
+participant "Background Worker" as Worker
+participant "AI Service (Gemini)" as AI
+participant "Hosting Provider" as Hosting
+participant "Cloudflare" as DNS
+database "Database" as DB
+
+== 1. Configuration & Content ==
+Tenant -> UI: Select Template Style
+Tenant -> UI: Provide Company Description / Services
+note right: Text or Voice Input
+
+UI -> API: POST /websites/{id}/generate-content
+API -> AI: Generate Site Copy (Home, About, Services)
+AI -> API: Return Structured Content
+API -> UI: Show Content Preview
+
+Tenant -> UI: Edit/Confirm Content
+UI -> API: POST /websites/{id}/create
+API -> DB: Create Website Record (status="building")
+API -> Worker: Enqueue 'build_website_job'
+API -> UI: Show "Building Website..."
+
+== 2. Build & Deploy (Async) ==
+Worker -> DB: Fetch BrandingProfile (Colors, Logo) & Content
+Worker -> Worker: Generate Static/Dynamic Assets
+note right: Apply branding to template
+
+Worker -> Hosting: Deploy Application/Files
+Hosting -> Worker: Return Deployment URL (e.g., verify-123.amara.host)
+
+== 3. Domain Linking & SSL ==
+Worker -> DB: Fetch Custom Domain (from Step 1)
+Worker -> Hosting: Add Custom Domain Binding
+Worker -> DNS: Create CNAME Record (@ -> verify-123.amara.host)
+
+loop SSL Verification
+    Worker -> Hosting: Check SSL Status
+    alt SSL Active
+        Hosting -> Worker: Status: Secured
+        Worker -> DB: Update Website Status: "live"
+        Worker -> API: Notify User
+    else Pending
+        Worker -> Worker: Wait 30s
+    end
+end
+
+== 4. Completion ==
+API -> UI: Update Status: "Live"
+Tenant -> UI: Click "Visit Website"
+UI -> Browser: Open https://{custom-domain}
+
+@enduml

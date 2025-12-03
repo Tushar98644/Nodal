@@ -1,0 +1,64 @@
+@startuml
+title Naming & Domain Sequence
+
+actor Tenant
+participant "Web App" as UI
+participant "API Server" as API
+participant "External (ASIC)" as ASIC
+participant "External (Cloudflare)" as Cloudflare
+participant "Background Worker" as Worker
+database "Database" as DB
+
+== 1. Business Name Check ==
+Tenant -> UI: Enter Company Name (Text/Voice)
+UI -> API: POST /onboarding/naming/check-availability
+API -> ASIC: SearchByName(name)
+ASIC -> API: Return Registry Status
+API -> UI: Return { available: boolean, conflicts: [] }
+
+alt Name Conflict
+    UI -> Tenant: Show Warning
+    Tenant -> UI: Choose Alternate Name OR Confirm Risk
+end
+
+== 2. Domain Search ==
+UI -> API: GET /onboarding/domains/search?name=...
+API -> Cloudflare: Check Availability (.com, .co, .io, etc.)
+Cloudflare -> API: Return Status & Prices
+API -> UI: Return Available Domains
+
+alt No Domains Available
+    API -> UI: Return Empty / Suggestions
+    UI -> Tenant: Suggest Prefixes/Suffixes
+    Tenant -> UI: Select Variation
+    UI -> API: Re-check Domain Availability
+end
+
+== 3. Domain Purchase (Async) ==
+Tenant -> UI: Select Domain & Confirm
+UI -> API: POST /onboarding/domains/purchase
+API -> Cloudflare: Initiate Purchase Order
+Cloudflare -> API: 202 Accepted (order_id)
+API -> DB: Update Step Status: "processing"
+API -> Worker: Enqueue 'monitor_domain_job'
+API -> UI: Show "Setting up domain..."
+
+loop Polling Domain Status
+    Worker -> Cloudflare: Check Order Status
+    
+    alt Purchase Complete
+        Cloudflare -> Worker: Status: Active
+        Worker -> Cloudflare: Configure DNS Records (MX, CNAME)
+        Worker -> DB: Update Domain Status "active"
+        Worker -> DB: Update OnboardingProgress (Naming = Completed)
+        Worker -> API: Notify Completion (Socket/Webhook)
+    else Still Processing
+        Worker -> Worker: Re-queue (Wait 30s)
+    end
+end
+
+UI -> API: Poll/Listen for Status
+API -> UI: Status: "active"
+UI -> Tenant: Show Success & Next Step
+
+@enduml

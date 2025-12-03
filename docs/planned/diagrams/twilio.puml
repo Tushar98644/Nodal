@@ -1,0 +1,55 @@
+@startuml
+title Twilio Phone Number Provisioning Sequence
+
+actor Tenant
+participant "Web App" as UI
+participant "API Server" as API
+participant "External (Twilio)" as Twilio
+participant "Background Worker" as Worker
+database "Database" as DB
+
+== 1. Search Numbers ==
+Tenant -> UI: Select Region & Type (Local/Toll-free)
+UI -> API: GET /integrations/twilio/search
+API -> Twilio: SearchAvailablePhoneNumbers(params)
+Twilio -> API: Return List of Numbers
+API -> UI: Display Number Options
+
+== 2. Provision Number ==
+Tenant -> UI: Select Number
+UI -> API: POST /integrations/twilio/provision
+API -> Twilio: IncomingPhoneNumbers.create()
+
+alt Instant Provisioning
+    Twilio -> API: 201 Created (sid, status=active)
+    API -> DB: Save Number Details
+    API -> Twilio: Update Webhook URLs (Voice/SMS)
+    API -> DB: Mark Step 5: Completed
+    API -> UI: Success
+else Regulatory Bundle Required (e.g., Some International)
+    Twilio -> API: 400 Required Regulatory Information
+    API -> UI: Request Additional Info (Address/ID)
+    Tenant -> UI: Submit Regulatory Docs
+    UI -> API: POST /integrations/twilio/regulatory
+    API -> Twilio: Submit RegulatoryBundle
+    API -> DB: Mark Step 5: "pending_approval"
+    
+    API -> UI: Show "Pending Approval" (Allow Continue)
+    
+    loop Async Approval Monitoring
+        Worker -> Twilio: Check Bundle Status
+        alt Approved
+            Twilio -> Worker: Status: Approved
+            Worker -> Twilio: Provision Number (Retry)
+            Worker -> Twilio: Configure Webhooks
+            Worker -> DB: Update Status: Active
+            Worker -> Email: Notify Tenant "Number Ready"
+        else Rejected
+            Twilio -> Worker: Status: Rejected
+            Worker -> DB: Update Status: Failed
+            Worker -> Email: Notify Tenant "Action Required"
+        end
+    end
+end
+
+@enduml

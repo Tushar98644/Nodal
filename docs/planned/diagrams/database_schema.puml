@@ -1,0 +1,88 @@
+@startuml
+
+!theme plain
+hide circle
+skinparam linetype ortho
+
+entity "Tenants" as tenants {
+  *id : UUID
+  --
+  name : VARCHAR(255)
+  status : ENUM('onboarding', 'active', 'suspended')
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "Users" as users {
+  *id : UUID
+  --
+  tenant_id : UUID <<FK>>
+  email : VARCHAR(255)
+  password_hash : VARCHAR
+  role : ENUM('admin', 'staff')
+  status : ENUM('invited', 'active')
+}
+
+entity "OnboardingProgress" as onboarding_progress {
+  *tenant_id : UUID <<FK>>
+  --
+  step_naming : ENUM('pending', 'completed')
+  step_branding : ENUM('pending', 'completed')
+  step_website : ENUM('pending', 'completed', 'skipped')
+  step_google : ENUM('pending', 'completed')
+  step_twilio : ENUM('pending', 'completed')
+  step_whop : ENUM('pending', 'completed')
+  last_updated : TIMESTAMP
+}
+
+entity "BrandingBriefs" as branding_briefs {
+  *id : UUID
+  --
+  tenant_id : UUID <<FK>>
+  inspiration_images : JSONB
+  competitor_urls : JSONB
+  industry : VARCHAR
+  style_keywords : JSONB
+  target_audience : TEXT
+}
+
+entity "BrandingProfiles" as branding_profiles {
+  *id : UUID
+  --
+  tenant_id : UUID <<FK>>
+  selected_logo_url : TEXT
+  color_palette : JSONB
+  typography : JSONB
+  assets_generated : JSONB
+}
+
+entity "Websites" as websites {
+  *id : UUID
+  --
+  tenant_id : UUID <<FK>>
+  domain_name : VARCHAR
+  template_id : VARCHAR
+  content_data : JSONB
+  deployment_status : ENUM('building', 'live', 'failed')
+  cloudflare_dns_id : VARCHAR
+}
+
+entity "Integrations" as integrations {
+  *id : UUID
+  --
+  tenant_id : UUID <<FK>>
+  provider : ENUM('google', 'twilio', 'whop')
+  external_id : VARCHAR
+  credentials : TEXT <<Encrypted>>
+  status : VARCHAR
+  meta_data : JSONB
+}
+
+tenants ||..|| users
+tenants ||..|| onboarding_progress
+tenants ||..|| branding_briefs
+tenants ||..|| branding_profiles
+tenants ||..|| websites
+tenants ||..|{ integrations
+
+@enduml

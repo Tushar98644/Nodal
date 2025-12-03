@@ -1,0 +1,44 @@
+@startuml
+title Whop Payment Setup Sequence
+
+actor Tenant
+participant "Web App" as UI
+participant "API Server" as API
+participant "Whop API" as Whop
+database "Database" as DB
+
+== 1. Initialize Payment Setup ==
+Tenant -> UI: Navigate to Payment Step
+UI -> API: POST /integrations/whop/create-sub-company
+API -> DB: Check if Whop ID exists
+
+alt New Sub-Company
+    API -> Whop: POST /api/v1/companies
+    Whop -> API: 201 Created (company_id)
+    API -> DB: Store whop_company_id
+else Already Exists
+    API -> DB: Retrieve whop_company_id
+end
+
+API -> UI: Return company_id
+
+== 2. Embedded Onboarding ==
+UI -> UI: Mount @whop/checkout-react (WhopPayoutPortal)
+Tenant -> UI: Enter Bank & Tax Details
+UI -> Whop: Submit Payout Details (Direct from Component)
+Whop -> UI: Validation Status
+
+== 3. Verification & Webhooks ==
+Whop -> API: Webhook: payout.updated (status=active)
+API -> DB: Update Integration Status
+API -> UI: Push Notification / Socket Update
+
+== 4. Test Transaction (Optional) ==
+Tenant -> UI: Click "Verify with Test"
+UI -> API: POST /integrations/whop/test-transaction
+API -> Whop: Trigger Test Payment
+Whop -> API: Webhook: payment.succeeded
+API -> DB: Record Test Transaction
+API -> UI: Show Success Message
+
+@enduml

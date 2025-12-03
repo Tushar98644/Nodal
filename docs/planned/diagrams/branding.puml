@@ -1,0 +1,57 @@
+@startuml
+title Branding Generation Sequence
+
+actor Tenant
+participant "Web App" as UI
+participant "API Server" as API
+participant "Job Queue" as Queue
+participant "Background Worker" as Worker
+participant "AI Service (Gemini/Nano)" as AI
+database "Database" as DB
+
+== 1. Submit Brief ==
+Tenant -> UI: Fill Inspiration & Style
+UI -> API: POST /branding/{id}/brief
+API -> DB: Save BrandingBrief
+API -> UI: 200 OK (Brief Saved)
+
+== 2. Generate Logos ==
+Tenant -> UI: Click "Generate Logos"
+UI -> API: POST /branding/{id}/logo/generate
+API -> Queue: Enqueue 'generate_logo_job'
+API -> UI: 202 Accepted (job_id)
+
+loop Polling for Status
+    UI -> API: GET /jobs/{job_id}
+    API -> DB: Check Job Status
+    API -> UI: Status: "processing"
+end
+
+Queue -> Worker: Pick up 'generate_logo_job'
+Worker -> DB: Fetch BrandingBrief
+Worker -> AI: Generate Images (Prompt based on brief)
+AI -> Worker: Return Image Blobs/URLs
+Worker -> S3: Upload Images
+Worker -> DB: Save Image URLs to BrandingProfile
+Worker -> DB: Update Job Status to "completed"
+
+UI -> API: GET /jobs/{job_id}
+API -> UI: Status: "completed", Data: [LogoURLs]
+
+== 3. Refine & Select ==
+Tenant -> UI: View Logo Gallery
+Tenant -> UI: Select Logo & Colors
+UI -> API: POST /branding/{id}/confirm
+API -> DB: Update BrandingProfile (selected_logo, palette)
+API -> Queue: Enqueue 'generate_assets_job'
+API -> UI: 200 OK
+
+== 4. Generate Assets ==
+Queue -> Worker: Pick up 'generate_assets_job'
+Worker -> DB: Fetch Profile & Logo
+Worker -> AI: Generate Business Card, Banner, etc.
+Worker -> S3: Upload Asset Files
+Worker -> DB: Update Profile with Asset URLs
+Worker -> DB: Update Job Status
+
+@enduml

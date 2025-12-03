@@ -1,0 +1,64 @@
+@startuml
+title Amara System Architecture
+
+package "Client Layer" {
+    [Amara Web App] as WebApp
+    note right of WebApp
+        React/Next.js
+        Voice & Text Inputs
+    end note
+}
+
+package "API Gateway / Load Balancer" {
+    [Nginx / Traefik] as Gateway
+}
+
+package "Application Layer" {
+    [API Server] as API
+    note right of API
+        Node.js / Express or Python / FastAPI
+        Handles request validation,
+        orchestration, and state management
+    end note
+
+    [Background Worker] as Worker
+    note right of Worker
+        Handles long-running tasks:
+        - Image Generation
+        - Domain Provisioning
+        - Email Sending
+    end note
+}
+
+package "Data Layer" {
+    database "PostgreSQL" as DB
+    database "Redis" as Cache
+    folder "Object Storage (S3)" as S3
+}
+
+package "External Services" {
+    [ABN Lookup] as ASIC
+    [Cloudflare API] as Cloudflare
+    [Nano Banana 2 / Gemini] as AI_Gen
+    [Google Admin SDK] as GSuite
+    [Twilio API] as Twilio
+    [Whop API] as Whop
+}
+
+WebApp --> Gateway : HTTPS
+Gateway --> API
+API --> DB : Read/Write
+API --> Cache : Session/Job Status
+API --> Worker : Enqueue Jobs (RabbitMQ/Redis)
+Worker --> S3 : Store Generated Assets
+Worker --> DB : Update Status
+
+API --> ASIC : Validate Name
+API --> Cloudflare : Check Domains
+Worker --> Cloudflare : Purchase Domain / DNS
+Worker --> AI_Gen : Generate Logos/Briefs
+Worker --> GSuite : Provision Email
+Worker --> Twilio : Provision Numbers
+API --> Whop : Create Sub-Company / Checkouts
+
+@enduml
