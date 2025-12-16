@@ -1,5 +1,3 @@
-// app/onboarding-flow/page.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -171,7 +169,7 @@ export default function OnboardingFlowPage() {
                     <FlowStep
                         number="2"
                         title="Payment"
-                        description="Process payment (Stripe)"
+                        description="Process payment (Whop)"
                     />
 
                     <Arrow />
@@ -232,7 +230,7 @@ export default function OnboardingFlowPage() {
                                 <SubStep variant="alt">
                                     Purchase Domain
                                     <br />
-                                    <span className="text-xs">Google/Microsoft</span>
+                                    <span className="text-xs">Google/Microsoft Workspace</span>
                                 </SubStep>
                             </div>
                         </BranchOption>
