@@ -16,7 +16,7 @@ const PaymentFlowVisualization = () => {
     {
       id: 2,
       actor: 'Frontend',
-      action: 'GET /api/user-invitation?token=xxx',
+      action: 'GET /api/fetch-onboarded-user-by-magic-link on payment page load',
       detail: 'Fetches: tenantId, paymentStatus, fullName, email, annualBilling',
       color: '#a78bfa',
     },
@@ -84,7 +84,7 @@ const PaymentFlowVisualization = () => {
       id: 11,
       actor: 'Frontend',
       action: 'Polling detects status change',
-      detail: 'success → redirect to /company-setup | failed → show retry button',
+      detail: 'success | failed → show retry button',
       color: '#60a5fa',
     },
   ];
@@ -128,9 +128,9 @@ const PaymentFlowVisualization = () => {
   ];
 
   const statusStates = [
-    { status: 'null', color: '#60a5fa', action: 'Show Whop checkout button' },
-    { status: 'pending', color: '#f59e0b', action: 'Show "Processing..." + poll for updates' },
-    { status: 'success', color: '#10b981', action: 'Show success → redirect to /company-setup' },
+    { status: 'null', color: '#60a5fa', action: 'Show Whop Embeddedcheckout' },
+    { status: 'pending', color: '#f59e0b', action: 'Show "Processing..."' },
+    { status: 'success', color: '#10b981', action: 'Show success' },
     { status: 'failed', color: '#ef4444', action: 'Show error + "Retry Payment" button' },
   ];
 
